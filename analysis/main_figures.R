@@ -1,7 +1,7 @@
-source('setup.R')
+source('./analysis/setup.R')
 
 # parameter space
-pars <- crossing(R=c(1.15, 1.3, 1.5), ve = c(0.6,0.75,0.9), vp = 0.9, scen=c(1,2,3,4,5))
+pars <- crossing(R=c(1.15, 1.3, 1.5), ve = c(0.6,0.75,0.9), vp = 0.9, scen=c(1,2,3,4))
 
 # RUN (according to piecewise scenario)
 res <- pars %>%  future_pmap_dfr(run_over_scen_2, .progress=TRUE)
@@ -29,10 +29,9 @@ gg_vax <- res %>%
 
 
 fig1a = ggarrange(gg_vax$plot[[1]]+ggtitle("A: oldest first"),
-                  gg_vax$plot[[2]]+ggtitle("B: 80+, 20-79"),
-                  gg_vax$plot[[3]]+ggtitle("C: 80+, EW, 70-79,..."),
-                  gg_vax$plot[[4]]+ggtitle("D: 80+, EW, 20-79"),
-                  ncol=4, nrow=1, common.legend=TRUE, legend="bottom")
+                  gg_vax$plot[[2]]+ggtitle("B: 80+, 70-79, EW, 60-69,..."),
+                  gg_vax$plot[[3]]+ggtitle("C: 80+, 70-79, 60-69, EW, 50-59, ..."),
+                  ncol=3, nrow=1, common.legend=TRUE, legend="bottom")
 
 
 # Arrange
@@ -120,4 +119,4 @@ ggsave('figures/fig-barplots.pdf', width=14, height=10)
 #####################
 # QALYs and Cost
 #####################
-source('qalys_cost.R')
+#source('qalys_cost.R')

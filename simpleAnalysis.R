@@ -4,9 +4,9 @@ source('./analysis/setup.R')
 
 #--- Define variables
 
-ve <- 0.75 
-vp <- 0.9
-T <- 200  # simulation days
+ve <- 0.75 # efficacy of vaccination against infection
+vp <- 0.9 #TODO change to AstraZeneca #efficacy against disease 
+T <- 80 # simulation days - April to July
 n <- sum(age_demo)/T # assume that everyone vaccinated within T days
 R <- 1.3 #R value for entire simulation
 
