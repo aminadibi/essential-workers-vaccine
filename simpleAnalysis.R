@@ -36,7 +36,7 @@ df2 <- run_sim_basic(C, I_0=I_0, percent_vax =1.0, strategy=S, num_perday=n,
 # compare trajectories
 trajectories <- compare_sims(sim1 = df1, 
                              sim2 = df2,
-                             name1 = '80+, EW, 70-79,...,20-29', 
+                             name1 = '80+, 70-79, EW,...,20-29', 
                              name2 = 'Oldest to Youngest', 
                              startDate=ymd("2021-04-01"), 
                              textsize = 16)
