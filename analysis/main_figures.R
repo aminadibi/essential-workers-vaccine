@@ -1,7 +1,7 @@
 source('./analysis/setup.R')
 
 # parameter space
-pars <- crossing(R=c(1.15, 1.3, 1.5), ve = c(0.6,0.75,0.9), vp = 0.9, scen=c(1,2,3,4))
+pars <- crossing(R=c(1.15, 1.3, 1.5), ve = c(0.6,0.75,0.9), vp = 0.9, scen=c(1,2))
 
 # RUN (according to piecewise scenario)
 res <- pars %>%  future_pmap_dfr(run_over_scen_2, .progress=TRUE)
@@ -15,10 +15,10 @@ trajA <- compare_sims(sim1 = filter(res, R==1.3 & scen==1 & ve==0.75),
                              name1=labels[1], name2=labels[2], startDate=startDate, 
                              textsize = 16)
 
-trajB <- compare_sims(sim1 = filter(res, R==1.3 & scen==3 & ve==0.75), 
-                             sim2=filter(res, R==1.3 & scen==4 & ve==0.75),
-                             name1=labels[3], name2=labels[4], startDate=startDate, 
-                             textsize = 16)
+# trajB <- compare_sims(sim1 = filter(res, R==1.3 & scen==3 & ve==0.75), 
+#                              sim2=filter(res, R==1.3 & scen==4 & ve==0.75),
+#                              name1=labels[3], name2=labels[4], startDate=startDate, 
+#                              textsize = 16)
 
 # Look at number vaccinated
 gg_vax <- res %>% 
@@ -28,19 +28,20 @@ gg_vax <- res %>%
     summarize(plot=map(data, display_prop_vax, startDate, type, textsize=16))
 
 
-fig1a = ggarrange(gg_vax$plot[[1]]+ggtitle("A: oldest first"),
-                  gg_vax$plot[[2]]+ggtitle("B: 80+, 70-79, EW, 60-69,..."),
-                  gg_vax$plot[[3]]+ggtitle("C: 80+, 70-79, 60-69, EW, 50-59, ..."),
-                  ncol=3, nrow=1, common.legend=TRUE, legend="bottom")
+fig1a = ggarrange(gg_vax$plot[[1]]+ggtitle('A: 80+, 70-79, EW, 60-69, ...'),
+                  gg_vax$plot[[2]]+ggtitle('B: 80+, 70-79, 60-69, EW, 50-59, ...'),
+                  ncol=2, nrow=1, common.legend=TRUE, legend="bottom")
 
 
 # Arrange
 fig1b = ggarrange(ggarrange(plotlist=trajA, nrow=1, ncol=4, widths = c(1,1,1,1)),
-           ggarrange(plotlist=trajB, nrow=1, ncol=4, widths = c(1,1,1,1)),
-          nrow=2)
+           #ggarrange(plotlist=trajB, nrow=1, ncol=4, widths = c(1,1,1,1)),
+          nrow=1)
  
+ggsave("figures/fig-trajectories.pdf", width = 45, height = 10)      
+
 ggarrange(fig1a, fig1b, nrow=2,heights = c(1, 1.6))
-ggsave("figures/fig-trajectories.pdf", width = 15, height = 10)      
+ggsave("figures/fig-trajectoriesFull.pdf", width = 15, height = 10)      
 
 
 ##########################
