@@ -1,6 +1,6 @@
 tsize <- 16
 R_vec <- c(1.15,1.3) # R vals to plot
-data = readxl::read_xlsx("~/essential-workers-vaccine/data/tupper_QALY_dollars.xlsx")
+data = readxl::read_xlsx("./data/tupper_QALY_dollars.xlsx")
 
 new_yll <- data$`QALYs lost to death` # goes into q1
 caseqalyfactor <- data$`QALD lost per community case` # into q2

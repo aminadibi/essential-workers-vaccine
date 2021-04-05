@@ -65,53 +65,55 @@ res2 <- res %>%
 R_vec <- c(1.15,1.3) # R vals to plot
 
 g1 <- ggplot(filter(res2, R %in% R_vec), aes(x=ve, y=cases, group=type, fill=type))+
-  geom_col(position='dodge', alpha=0.8)+ 
-  scale_fill_brewer(palette = "Dark2")+ 
+  geom_col(position='dodge', alpha=1)+ 
+  #scale_fill_brewer(palette = "Dark2")+ 
   facet_wrap(~ R,  ncol=4,labeller=label_both)+
-  scale_color_brewer(palette = "Dark2")+
+  #scale_color_brewer(palette = "Dark2")+
   theme(text=element_text(size=16))+
   theme(panel.spacing.x=unit(1.5, "lines"))+
   labs(x='Efficacy against Infection', y='Infections', fill='Strategy') +
             theme(text=element_text(size=tsize))+
             theme(panel.spacing.x=unit(1.5, "lines"),
                           axis.text.x = element_text(angle = 35,hjust = 1))+
-  scale_x_continuous(breaks=c(0.6,0.75,0.9))
+  scale_x_continuous(breaks=c(0.6,0.75,0.9)) +
+  scale_y_continuous(labels = scales::comma) +
+  theme_bw()
 
 g2 <- ggplot(filter(res2, R %in% R_vec), aes(x=ve, y=hosp, group=type, fill=type))+
-  geom_col(position='dodge',alpha=0.8)+ 
-  scale_fill_brewer(palette = "Dark2")+ 
+  geom_col(position='dodge',alpha=1)+ 
+  #scale_fill_brewer(palette = "Dark2")+ 
   facet_wrap(~ R,  ncol=4,labeller=label_both)+
-  scale_color_brewer(palette = "Dark2")+
+  #scale_color_brewer(palette = "Dark2")+
   theme(text=element_text(size=tsize))+
   theme(panel.spacing.x=unit(1.5, "lines"))+
   labs(x='Efficacy against Infection', y='Hospitalizations', fill='Strategy') +
             theme(text=element_text(size=16))+theme(panel.spacing.x=unit(1.5, "lines") ,
                           axis.text.x = element_text(angle = 35,hjust = 1))+
-  scale_x_continuous(breaks=c(0.6,0.75,0.9))
+  scale_x_continuous(breaks=c(0.6,0.75,0.9)) + theme_bw()
 
 g3 <- ggplot(filter(res2, R %in% R_vec), aes(x=ve, y=deaths, group=type, fill=type))+
-  geom_col(position='dodge',alpha=0.8)+ 
-  scale_fill_brewer(palette = "Dark2")+ 
+  geom_col(position='dodge',alpha=1)+ 
+  #scale_fill_brewer(palette = "Dark2")+ 
   facet_wrap(~ R,  ncol=4, ,labeller=label_both)+
-  scale_color_brewer(palette = "Dark2")+
+  #scale_color_brewer(palette = "Dark2")+
   theme(text=element_text(size=16))+
   theme(panel.spacing.x=unit(1.5, "lines"))+
   labs(x='Efficacy against Infection', y='Deaths', fill='Strategy') +
             theme(text=element_text(size=tsize))+theme(panel.spacing.x=unit(1.5, "lines") ,
                           axis.text.x = element_text(angle = 35,hjust = 1))+
-  scale_x_continuous(breaks=c(0.6,0.75,0.9))
+  scale_x_continuous(breaks=c(0.6,0.75,0.9)) + theme_bw()
 
 g4 <- ggplot(filter(res2, R %in% R_vec), aes(x=ve, y=long, group=type, fill=type))+
-  geom_col(position='dodge',alpha=0.8)+ 
-  scale_fill_brewer(palette = "Dark2")+ 
+  geom_col(position='dodge',alpha=1)+ 
+  #scale_fill_brewer(palette = "Accent")+ 
   facet_wrap(~ R,  ncol=4,,labeller=label_both)+
-  scale_color_brewer(palette = "Dark2")+
+  #scale_color_brewer(palette = "Accent")+
   theme(text=element_text(size=16))+
   theme(panel.spacing.x=unit(1.5, "lines"))+
   labs(x='Efficacy against Infection', y='Long COVID', fill='Strategy') +
             theme(text=element_text(size=tsize))+theme(panel.spacing.x=unit(1.5, "lines") ,
                           axis.text.x = element_text(angle = 35,hjust = 1))+
-  scale_x_continuous(breaks=c(0.6,0.75,0.9))
+  scale_x_continuous(breaks=c(0.6,0.75,0.9)) + theme_bw()
 
 bars <- ggarrange(g1,g2,g3,g4, ncol=2, nrow=2, common.legend=TRUE, legend='bottom', align='v')
 
@@ -120,4 +122,4 @@ ggsave('figures/fig-barplots.pdf', width=14, height=10)
 #####################
 # QALYs and Cost
 #####################
-#source('qalys_cost.R')
+source('./analysis/qalys_cost.R')
