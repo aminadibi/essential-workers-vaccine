@@ -1,6 +1,6 @@
 # define key parameters according to BC rates & demographics, 
 #   & build the 4 contact matrices with essential workers
-source('setup.R') 
+source('./analysis/setup.R') 
 
 #--- Define variables
 
@@ -19,7 +19,7 @@ C <- construct_C_from_prem(home=mu_home, work=mu_work, school=mu_school, other=m
 # 0-9, 10-19,20-29,...,80+, 20-29e,...,70-79e 
 # so essential workers corresponding to indices 10:15
 
-S <- list(9, 10:15, 8, 7,6,5,4,3) # 80+, EW, 70-79,...,20-29
+S <- list(9, 8, 10:15, 7, 6,5,4,3) # 80+, 70-79, EW, 70-79,...,20-29
 
 # run
 df1 <- run_sim_basic(C, I_0=I_0, percent_vax =1.0, strategy=S, num_perday=n,
@@ -38,7 +38,7 @@ trajectories <- compare_sims(sim1 = df1,
                              sim2 = df2,
                              name1 = '80+, EW, 70-79,...,20-29', 
                              name2 = 'Oldest to Youngest', 
-                             startDate=ymd("2021-01-01"), 
+                             startDate=ymd("2021-04-01"), 
                              textsize = 16)
 
 ggarrange(plotlist=trajectories, align="v")
