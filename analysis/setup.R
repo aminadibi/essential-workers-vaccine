@@ -97,7 +97,7 @@ run_over_scen_2 = function(R, ve, vp, scen,alpha=0.0){
    C <- construct_C_from_prem(home=mu_home, work=mu_work, school=mu_school, other=mu_other, u=u_var,
                               target_R0=R_init, in_school=TRUE, alpha_factor=alpha)
 
-   df0 <- run_sim_basic(C, I_0=I_0, percent_vax =1.0, strategy=list(9), num_perday=n,
+   df0 <- run_sim_basic(C, I_0=I_0, percent_vax =1.0, strategy=list(9, 8), num_perday=n,
                         v_e = rep(ve, num_groups), v_p=rep(vp, num_groups),
                         u = u_var, num_days=T1, with_essential=TRUE, H=H) 
    # Final stage

@@ -389,6 +389,72 @@ compare_sims <- function(sim1, sim2, name1="1", name2="2",
   return(list(p1,p2,p3,p4))
 }
 
+compare_sims_data <- function(sim1, sim2, name1="1", name2="2",
+                         startDate = ymd("2021-01-10"), LCFAC=1,
+                         stages=NULL,textsize=16) {
+  if (length(LCFAC)==1) {LCFAC1 = LCFAC; LCFAC2=LCFAC} 
+  if (length(LCFAC)==2) {LCFAC1 = LCFAC[1]; LCFAC2=LCFAC[2]} 
+  
+  o1 = extract_cases_deaths(sim1,LCFAC = LCFAC1); o1$scen = name1
+  o3 = extract_cases_deaths(sim2,LCFAC = LCFAC2); o3$scen= name2
+  oo = rbind(o1, o3); oo$scen=as.factor(oo$scen)
+  oo$date = startDate + oo$time 
+  
+  p1=  ggplot(data = oo, aes(x=date, y=incid, fill=age_band))+theme_light()+
+    facet_wrap(~scen,nrow = 1) +
+    theme_bw()+
+    geom_area(position="stack")+guides(fill=FALSE)+
+    scale_fill_viridis(discrete = T) +
+    theme_ipsum_rc(grid="XY") +
+    scale_y_comma() +
+    theme(axis.title.x = element_blank(),text=element_text(size=textsize))+
+    ylab("Incidence")
+  
+  p2=  ggplot(data = oo, aes(x=date, y=hosp, fill=age_band))+theme_light()+
+    facet_wrap(~scen,nrow = 1) +
+    theme_bw()+
+    geom_area(position="stack") + guides(fill=FALSE) +
+    scale_fill_viridis(discrete = T) +
+    theme_ipsum_rc(grid="XY") +
+    scale_y_comma() +
+    theme(axis.title.x = element_blank(),text=element_text(size=textsize))+
+    ylab("Hospitalizations")
+  
+  p3 = ggplot(data = oo, aes(x=date, y=newdeaths, fill=age_band))+
+    facet_wrap(~scen,nrow = 1) +
+    geom_area(position="stack",)+ guides(fill=FALSE)+
+    scale_fill_viridis(discrete = T) +
+    theme_ipsum_rc(grid="XY") +
+    scale_y_comma() +
+    theme(axis.title.x = element_blank(),text=element_text(size=textsize)) +
+    ylab("Daily deaths")
+  
+  p4 = ggplot(data = oo, aes(x=date, y=long, fill=age_band))+
+    facet_wrap(~scen,nrow = 1) +
+    geom_area(position="stack")+guides(fill=FALSE)+
+    scale_fill_viridis(discrete = T) +
+    theme_ipsum_rc(grid="XY") +
+    scale_y_comma() +
+    theme(legend.position="bottom") +
+    theme(axis.title.x = element_blank(),text=element_text(size=textsize)) +
+    ylab("Long covid")
+  
+  
+  if (!is.null(stages)){
+    shade_phases <- data.frame(xstart=stages[c(TRUE,FALSE)], xend=stages[c(FALSE,TRUE)])
+    p1 <- p1 +   geom_rect(data = shade_phases, aes(xmin = xstart, xmax = xend, 
+                                                    ymin = -Inf, ymax = Inf), alpha = 0.15, inherit.aes=FALSE)
+    p2 <- p2 +    geom_rect(data = shade_phases, aes(xmin = xstart, xmax = xend, 
+                                                     ymin = -Inf, ymax = Inf), alpha = 0.15, inherit.aes=FALSE)
+    p3 <- p3 +     geom_rect(data = shade_phases, aes(xmin = xstart, xmax = xend, 
+                                                      ymin = -Inf, ymax = Inf), alpha = 0.15, inherit.aes=FALSE)
+    p4 <- p4 +   geom_rect(data = shade_phases, aes(xmin = xstart, xmax = xend, 
+                                                    ymin = -Inf, ymax = Inf), alpha = 0.15, inherit.aes=FALSE)
+    
+  }
+  
+  return(oo)
+}
 
 display_prop_vax <- function(sim,startDate=lubridate::ymd("2021-01-01"),
                              label, stages=NULL, textsize=16){
