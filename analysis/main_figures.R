@@ -1,5 +1,6 @@
 source('./analysis/setup.R')
 
+
 # parameter space
 pars <- crossing(R=c(1.15, 1.3, 1.5), ve = c(0.6,0.75,0.9), vp = 0.9, scen=c(1,2))
 
@@ -36,7 +37,8 @@ fig1a = ggarrange(gg_vax$plot[[1]]+ggtitle('A: 80+, 70-79, EW, 60-69, ...'),
 # Arrange
 fig1b = ggarrange(ggarrange(plotlist=trajA, nrow=1, ncol=4, widths = c(1,1,1,1)),
            #ggarrange(plotlist=trajB, nrow=1, ncol=4, widths = c(1,1,1,1)),
-          nrow=1)
+           common.legend=TRUE, legend="bottom",
+           nrow=1)
  
 ggsave("figures/fig-trajectories.pdf", width = 45, height = 10)      
 

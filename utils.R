@@ -336,27 +336,39 @@ compare_sims <- function(sim1, sim2, name1="1", name2="2",
   p1=  ggplot(data = oo, aes(x=date, y=incid, fill=age_band))+theme_light()+
     facet_wrap(~scen,nrow = 1) +
     theme_bw()+
-    geom_area(position="stack",alpha=0.7)+guides(fill=FALSE)+
+    geom_area(position="stack")+guides(fill=FALSE)+
+    scale_fill_viridis(discrete = T) +
+    theme_ipsum_rc(grid="XY") +
+    scale_y_comma() +
     theme(axis.title.x = element_blank(),text=element_text(size=textsize))+
     ylab("Incidence")
   
   p2=  ggplot(data = oo, aes(x=date, y=hosp, fill=age_band))+theme_light()+
     facet_wrap(~scen,nrow = 1) +
     theme_bw()+
-    geom_area(position="stack",alpha=0.7)+guides(fill=FALSE)+
+    geom_area(position="stack") + guides(fill=FALSE) +
+    scale_fill_viridis(discrete = T) +
+    theme_ipsum_rc(grid="XY") +
+    scale_y_comma() +
     theme(axis.title.x = element_blank(),text=element_text(size=textsize))+
     ylab("Hospitalizations")
   
   p3 = ggplot(data = oo, aes(x=date, y=newdeaths, fill=age_band))+
     facet_wrap(~scen,nrow = 1) +
-    theme_bw()+
-    geom_area(position="stack",alpha=0.7)+guides(fill=FALSE)+
+    geom_area(position="stack",)+ guides(fill=FALSE)+
+    scale_fill_viridis(discrete = T) +
+    theme_ipsum_rc(grid="XY") +
+    scale_y_comma() +
     theme(axis.title.x = element_blank(),text=element_text(size=textsize)) +
     ylab("Daily deaths")
+  
   p4 = ggplot(data = oo, aes(x=date, y=long, fill=age_band))+
     facet_wrap(~scen,nrow = 1) +
-    theme_bw()+
-    geom_area(position="stack",alpha=0.7)+guides(fill=FALSE)+
+    geom_area(position="stack")+guides(fill=FALSE)+
+    scale_fill_viridis(discrete = T) +
+    theme_ipsum_rc(grid="XY") +
+    scale_y_comma() +
+    theme(legend.position="bottom") +
     theme(axis.title.x = element_blank(),text=element_text(size=textsize)) +
     ylab("Long covid")
   

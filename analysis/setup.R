@@ -5,6 +5,9 @@ library(furrr)
 library(cowplot)
 library(lubridate)
 library(ggpubr)
+library(viridis)
+library(hrbrthemes)
+
 no_cores <- availableCores() - 1
 plan(multicore, workers = no_cores)
 theme_set(theme_light())
