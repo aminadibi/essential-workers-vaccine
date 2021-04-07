@@ -89,19 +89,19 @@ strategies <- list(#list(9, c(8,15),c(7,14), c(6,13), c(5,12), c(4,11), c(3,10))
 # faster vaccination 
 ########################
 run_over_scen_2 = function(R, ve, vp, scen,alpha=0.0){
-   T1 <- 90 #extended till April 1st, and adding 70 to 79
-   T2 <- 180
+   T1 <- 60 #extended till April 1st, and adding 70 to 79
+   T2 <- 270 - T1
    # Initial stage (vax all 80+)
-   R_init <- 1.05
-   n <- (age_demo[8] + age_demo[9])/T1
+   R_init <- 1.00
+   n <- ( age_demo[9])/T1
    C <- construct_C_from_prem(home=mu_home, work=mu_work, school=mu_school, other=mu_other, u=u_var,
                               target_R0=R_init, in_school=TRUE, alpha_factor=alpha)
 
-   df0 <- run_sim_basic(C, I_0=I_0, percent_vax =1.0, strategy=list(9, 8), num_perday=n,
+   df0 <- run_sim_basic(C, I_0=I_0, percent_vax =1.0, strategy=list(9), num_perday=n,
                         v_e = rep(ve, num_groups), v_p=rep(vp, num_groups),
                         u = u_var, num_days=T1, with_essential=TRUE, H=H) 
    # Final stage
-   n <- sum(age_demo[-c(8:9)])/T2
+   n <- sum(age_demo[-c(9)])/T2
    C <- construct_C_from_prem(home=mu_home, work=mu_work, school=mu_school, other=mu_other, u=u_var,
                               target_R0=R, in_school=TRUE, alpha_factor=alpha)
    df <- run_sim_restart(C, df_0=tail(df0, n=1), percent_vax =1.0, strategy= strategies[[scen]], num_perday=n,

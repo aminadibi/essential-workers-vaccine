@@ -1,9 +1,8 @@
 library(Cairo)
-
 source('./analysis/setup.R')
 
 # parameter space
-pars <- crossing(R=c(1.15, 1.3, 1.5), ve = c(0.6,0.75,0.9), vp = 0.9, scen=c(1,2))
+pars <- crossing(R=c(1.15, 1.25, 1.5), ve = c(0.6,0.75,0.9), vp = 0.9, scen=c(1,2))
 
 # RUN (according to piecewise scenario)
 res <- pars %>%  future_pmap_dfr(run_over_scen_2, .progress=TRUE)
@@ -12,8 +11,8 @@ res <- pars %>%  future_pmap_dfr(run_over_scen_2, .progress=TRUE)
 # FIGURE 1 (trajectories)
 #############################
 # Look at trajectories
-trajA <- compare_sims(sim1 = filter(res, R==1.3 & scen==1 & ve==0.75), 
-                             sim2=filter(res, R==1.3 & scen ==2 & ve==0.75),
+trajA <- compare_sims(sim1 = filter(res, R==1.25 & scen==1 & ve==0.75), 
+                             sim2=filter(res, R==1.25 & scen ==2 & ve==0.75),
                              name1=labels[1], name2=labels[2], startDate=startDate, 
                              textsize = 16)
 
@@ -31,12 +30,12 @@ gg_vax <- res %>%
 
 
 fig1a = ggarrange(gg_vax$plot[[1]]+
-                    ggtitle(subtitle = 'A: 80+, 70-79, EW, 60-69, ...') +
+                    labs(subtitle = 'A: 80+, 70-79, EW, 60-69, ...') +
                     scale_color_viridis(discrete = T)+
                     theme_ipsum_rc(grid="XY") + 
                     theme(axis.title.x = element_blank(),text=element_text(size=16))
                     ,
-                  gg_vax$plot[[2]]+ggtitle('B: 80+, 70-79, 60-69, EW, 50-59, ...') +
+                  gg_vax$plot[[2]]+labs(subtitle='B: 80+, 70-79, 60-69, EW, 50-59, ...') +
                     scale_color_viridis(discrete = T)+
                     theme_ipsum_rc(grid="XY"),
                   ncol=2, nrow=1, common.legend=TRUE, legend="bottom")
@@ -72,7 +71,7 @@ res2 <- res %>%
               vax_immunity = map_dbl(data, vax_immunity)
 )
 
-R_vec <- c(1.15,1.3) # R vals to plot
+R_vec <- c(1.15,1.25) # R vals to plot
 
 g1 <- ggplot(filter(res2, R %in% R_vec), aes(x=ve, y=cases, group=type, fill=type))+
   geom_col(position='dodge', alpha=1)+ 
@@ -120,6 +119,7 @@ g4 <- ggplot(filter(res2, R %in% R_vec), aes(x=ve, y=long, group=type, fill=type
   #scale_color_brewer(palette = "Accent")+
   theme(text=element_text(size=16))+
   theme(panel.spacing.x=unit(1.5, "lines"))+
+  
   labs(x='Efficacy against Infection', y='Long COVID', fill='Strategy') +
             theme(text=element_text(size=tsize))+theme(panel.spacing.x=unit(1.5, "lines") ,
                           axis.text.x = element_text(angle = 35,hjust = 1))+
@@ -133,10 +133,12 @@ ggsave('figures/fig-barplots.pdf', width=14, height=10,  device = cairo_pdf)
 
 ### Personal Risk
 
-oo <- compare_sims_data(sim1 = filter(res, R==1.3 & scen==1 & ve==0.75), 
-                                               sim2=filter(res, R==1.3 & scen ==2 & ve==0.75),
+oo <- compare_sims_data(sim1 = filter(res, R==1.25 & scen==1 & ve==0.75), 
+                                               sim2=filter(res, R==1.25 & scen ==2 & ve==0.75),
                                                name1=labels[1], name2=labels[2], startDate=startDate, 
                                                textsize = 16)
+
+
 
 
 oo %>% filter (age_band == "50-59" & scen == "B: 80+, 70-79, 60-69, EW, 50-59, ..." & 
@@ -154,6 +156,21 @@ oo %>% filter (age_band == "30-39" & scen == "B: 80+, 70-79, 60-69, EW, 50-59, .
 oo %>% filter (age_band == "20-29" & scen == "B: 80+, 70-79, 60-69, EW, 50-59, ..." & 
                  date<ymd("2021-06-01") & date>ymd("2021-04-01")) %>%
   select(incid, newdeaths, hosp, long) %>% summarise_all(sum) / 590560
+
+
+####### Validation
+cases <- read_csv('http://www.bccdc.ca/Health-Info-Site/Documents/BCCDC_COVID19_Dashboard_Case_Details.csv')
+
+counts <- cases %>% filter (Reported_Date > ymd("2021-01-01")) %>% group_by(Reported_Date) %>% tally()
+observed <- as_tibble(counts) %>% rename(date = Reported_Date) %>%
+  mutate(observed = zoo::rollmean(n, k = 7, fill = NA))
+
+predicted <- oo %>% filter(scen == "A: 80+, 70-79, EW, 60-69, ...") %>% group_by(date) %>% summarize(incid = sum(incid)) %>% filter (date < ymd("2021-04-05") & date > ymd("2021-01-02"))
+validation <- predicted %>% left_join(observed, by="date")
+validation %>% pivot_longer(cols = c(incid, observed)) %>%
+  ggplot () + geom_line(aes(y=value, x=date, color=name)) + 
+  theme_ipsum_rc(grid="Y")
+
 
 #####################
 # QALYs and Cost

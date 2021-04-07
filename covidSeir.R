@@ -6,10 +6,10 @@ ymd <- lubridate::ymd
 
 cases <- read_csv('http://www.bccdc.ca/Health-Info-Site/Documents/BCCDC_COVID19_Dashboard_Case_Details.csv')
 
-counts <- cases %>% filter (Reported_Date > ymd("2020-09-01")) %>% group_by(Reported_Date) %>% tally()
+counts <- cases %>% filter (Reported_Date > ymd("2021-01-01")) %>% group_by(Reported_Date) %>% tally()
 dat <- structure(list(value = counts$n,
                       date = counts$Reported_Date,
-                      day = 1:210), row.names = c(NA, -210L), 
+                      day = 1:94), row.names = c(NA, -94L), 
                  class = "data.frame")
 dat <- dplyr::as_tibble(dat)
 #dat$date <- ymd("2020-03-01") + dat$day - 1
