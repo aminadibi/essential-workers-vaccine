@@ -161,16 +161,59 @@ oo %>% filter (age_band == "20-29" & scen == "B: 80+, 70-79, 60-69, EW, 50-59, .
 ####### Validation
 cases <- read_csv('http://www.bccdc.ca/Health-Info-Site/Documents/BCCDC_COVID19_Dashboard_Case_Details.csv')
 
-counts <- cases %>% filter (Reported_Date > ymd("2021-01-01")) %>% group_by(Reported_Date) %>% tally()
+counts <- cases %>% filter (Reported_Date > ymd("2021-01-01")) %>% 
+  group_by(Reported_Date) %>% tally()
+
+
 observed <- as_tibble(counts) %>% rename(date = Reported_Date) %>%
   mutate(observed = zoo::rollmean(n, k = 7, fill = NA))
 
-predicted <- oo %>% filter(scen == "A: 80+, 70-79, EW, 60-69, ...") %>% group_by(date) %>% summarize(incid = sum(incid)) %>% filter (date < ymd("2021-04-05") & date > ymd("2021-01-02"))
+
+predicted <- oo %>% 
+  filter(scen == "B: 80+, 70-79, 60-69, EW, 50-59, ...") %>% 
+  group_by(date) %>% summarize(incid = sum(incid)) %>% 
+  filter (date < ymd("2021-04-05") & date > ymd("2021-01-02"))
+
 validation <- predicted %>% left_join(observed, by="date")
 validation %>% pivot_longer(cols = c(incid, observed)) %>%
   ggplot () + geom_line(aes(y=value, x=date, color=name)) + 
   theme_ipsum_rc(grid="Y")
 
+age.under.80 <- c("0-9", 
+                  "10-19",
+                  "20-29",
+                  "30-39",
+                  "40-49",
+                  "50-59",
+                  "60-69",
+                  "70-79")
+
+age.80.plus <- c("80-89", "90+")
+
+
+countsPerAge <- cases %>% filter (Reported_Date > ymd("2021-01-01")) %>% 
+  group_by(Reported_Date, Age_Group) %>% rename (age_band = Age_Group) %>%
+  mutate(age_band=recode(age_band,"<10" = "0-9")) %>%
+  mutate(age_band  = ifelse(age_band %in% age.under.80, age_band,
+                            ifelse(age_band %in% age.80.plus, "80+", 
+                                   NA))) %>%
+  tally() 
+
+
+predictedPerAge <- oo %>% 
+  filter(scen == "B: 80+, 70-79, 60-69, EW, 50-59, ...") %>% 
+  group_by(date, age_band) %>% summarize(incid = sum(incid)) %>% 
+  filter (date < ymd("2021-04-05") & date > ymd("2021-01-02"))
+
+observedPerAge <- as_tibble(countsPerAge) %>% rename(date = Reported_Date) %>%
+  mutate(observed = zoo::rollmean(n, k = 7, fill = NA))
+
+validationPerAge <- predictedPerAge %>% 
+  left_join(observedPerAge, by=c("date", "age_band"))
+validationPerAge %>% pivot_longer(cols = c(incid, observed)) %>%
+  ggplot () + geom_line(aes(y=value, x=date, color=name)) + 
+  facet_wrap(~age_band) +
+  theme_ipsum_rc(grid="Y")
 
 #####################
 # QALYs and Cost
