@@ -57,8 +57,21 @@ num_groups <- length(age_demo)
 sero_none <- rep(0, num_groups) # no prior immunity
 startDate <- lubridate::ymd("2021-01-01")
 
-I_0 <- c(133.0, 241.0, 488.8, 364.0, 315.2, 243.2, 203.2, 111.2, 155.0, 122.2,  91.0,  78.8,
-   60.8,  50.8,  27.8) # estimated prevalence by age in BC in Jan 2021
+I_0 <- c(133.0,
+         241.0,
+         488.8,
+         364.0,
+         315.2,
+         243.2,
+         203.2,
+         111.2,
+         155.0,
+         122.2, 
+         91.0,  
+         78.8,
+         60.8,  
+         50.8,  
+         27.8) # estimated prevalence by age in BC in Jan 2021
 
 u_var <- c(0.38, 0.4, 0.79, 0.86, 0.8, 0.82, 0.88,1.0, 1.0,
   0.79, 0.86, 0.8, 0.82, 1.0,1.0) # rel. susceptibility (this works better with validation than one in bubar)

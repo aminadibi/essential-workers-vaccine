@@ -161,7 +161,7 @@ oo %>% filter (age_band == "20-29" & scen == "B: 80+, 70-79, 60-69, EW, 50-59, .
 ####### Validation
 cases <- read_csv('http://www.bccdc.ca/Health-Info-Site/Documents/BCCDC_COVID19_Dashboard_Case_Details.csv')
 
-counts <- cases %>% filter (Reported_Date > ymd("2021-01-01")) %>% 
+counts <- cases %>% filter (Reported_Date > ymd("2020-12-01")) %>% 
   group_by(Reported_Date) %>% tally()
 
 
@@ -191,7 +191,7 @@ age.under.80 <- c("0-9",
 age.80.plus <- c("80-89", "90+")
 
 
-countsPerAge <- cases %>% filter (Reported_Date > ymd("2021-01-01")) %>% 
+countsPerAge <- cases %>% filter (Reported_Date > ymd("2020-12-01")) %>% 
   group_by(Reported_Date, Age_Group) %>% rename (age_band = Age_Group) %>%
   mutate(age_band=recode(age_band,"<10" = "0-9")) %>%
   mutate(age_band  = ifelse(age_band %in% age.under.80, age_band,
@@ -206,11 +206,18 @@ predictedPerAge <- oo %>%
   filter (date < ymd("2021-04-05") & date > ymd("2021-01-02"))
 
 observedPerAge <- as_tibble(countsPerAge) %>% rename(date = Reported_Date) %>%
-  mutate(observed = zoo::rollmean(n, k = 7, fill = NA))
+  mutate(observed7day = zoo::rollmean(n, k = 7, fill = NA))
+
+
+observedPerAge5daySum <- as_tibble(countsPerAge) %>% rename(date = Reported_Date) %>%
+  mutate(observed5daysum = 5* zoo::rollmean(n, k = 5, fill = NA))
+
+observedPerAge5daySum %>% filter(date==ymd("2021-01-01"))
+
 
 validationPerAge <- predictedPerAge %>% 
   left_join(observedPerAge, by=c("date", "age_band"))
-validationPerAge %>% pivot_longer(cols = c(incid, observed)) %>%
+validationPerAge %>% pivot_longer(cols = c(incid, observed7day)) %>%
   ggplot () + geom_line(aes(y=value, x=date, color=name)) + 
   facet_wrap(~age_band) +
   theme_ipsum_rc(grid="Y")
