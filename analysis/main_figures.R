@@ -2,7 +2,7 @@ library(Cairo)
 source('./analysis/setup.R')
 
 # parameter space
-pars <- crossing(R=c(1.15, 1.25, 1.5), ve = c(0.6,0.75,0.9), vp = 0.9, scen=c(1,2))
+pars <- crossing(R=c(1.15, 1.3, 1.4, 1.5), ve = c(0.6,0.75,0.9), vp = 0.8, scen=c(1,2))
 
 # RUN (according to piecewise scenario)
 res <- pars %>%  future_pmap_dfr(run_over_scen_2, .progress=TRUE)
@@ -11,8 +11,8 @@ res <- pars %>%  future_pmap_dfr(run_over_scen_2, .progress=TRUE)
 # FIGURE 1 (trajectories)
 #############################
 # Look at trajectories
-trajA <- compare_sims(sim1 = filter(res, R==1.25 & scen==1 & ve==0.75), 
-                             sim2=filter(res, R==1.25 & scen ==2 & ve==0.75),
+trajA <- compare_sims(sim1 = filter(res, R==1.3 & scen==1 & ve==0.75), 
+                             sim2=filter(res, R==1.3 & scen ==2 & ve==0.75),
                              name1=labels[1], name2=labels[2], startDate=startDate, 
                              textsize = 16)
 
@@ -71,7 +71,7 @@ res2 <- res %>%
               vax_immunity = map_dbl(data, vax_immunity)
 )
 
-R_vec <- c(1.15,1.25) # R vals to plot
+R_vec <- c(1.15,1.3) # R vals to plot
 
 g1 <- ggplot(filter(res2, R %in% R_vec), aes(x=ve, y=cases, group=type, fill=type))+
   geom_col(position='dodge', alpha=1)+ 
@@ -133,8 +133,8 @@ ggsave('figures/fig-barplots.pdf', width=14, height=10,  device = cairo_pdf)
 
 ### Personal Risk
 
-oo <- compare_sims_data(sim1 = filter(res, R==1.25 & scen==1 & ve==0.75), 
-                                               sim2=filter(res, R==1.25 & scen ==2 & ve==0.75),
+oo <- compare_sims_data(sim1 = filter(res, R==1.3 & scen==1 & ve==0.75), 
+                                               sim2=filter(res, R==1.3 & scen ==2 & ve==0.75),
                                                name1=labels[1], name2=labels[2], startDate=startDate, 
                                                textsize = 16)
 
